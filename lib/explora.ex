@@ -12,10 +12,11 @@ defmodule Explora do
       :world
 
   """
-  alias Explora.{API, Block, Tx, Fee, UTXO}
+  alias Explora.{API, Block, Tx, Fee, UTXO, Outpoint}
 
   # BLOCKS
 
+  @spec get_block(String.t(), boolean()) :: {:ok, Block.t()} | {:error, String.t()}
   def get_block(hash, testnet \\ false) do
     resp = API.get("block/#{hash}", testnet)
     case resp do
@@ -26,6 +27,7 @@ defmodule Explora do
     end
   end
 
+  @spec get_block_by_height(integer(), boolean()) :: {:ok, Block.t()} | {:error, String.t()}
   def get_block_by_height(height, testnet \\ false) do
     resp = API.get("block-height/#{height}", testnet)
     case resp do
@@ -38,6 +40,7 @@ defmodule Explora do
 
   # TRANSACTIONS
 
+  @spec get_tx(String.t(), boolean()) :: {:ok, Tx.t()} | {:error, String.t()}
   def get_tx(txid, testnet \\ false) do
     resp = API.get("tx/#{txid}", testnet)
     case resp do
@@ -48,6 +51,7 @@ defmodule Explora do
     end
   end
 
+  @spec post_tx(String.t(), boolean()) :: {:ok, String.t()} | {:error, String.t()}
   def post_tx(tx_hex, testnet \\ false) do
     resp = API.post("tx", tx_hex, testnet)
     case resp do
@@ -60,6 +64,18 @@ defmodule Explora do
 
   # UTXOs
 
+  @spec get_outpoint(String.t(), integer(), boolean()) :: {:ok, Outpoint.t()} | {:error, String.t()}
+  def get_outpoint(txid, vout, testnet \\ false) do
+    resp = API.get("tx/#{txid}/outspend/#{vout}", testnet)
+    case resp do
+      {:ok, outpoint_json} ->
+        {:ok, Outpoint.decode(outpoint_json)}
+      {:error, err} ->
+        {:error, "Could not get UTXO: #{txid}:#{vout}: #{err}"}
+    end
+  end
+
+  @spec get_address_utxos(String.t(), boolean()) :: {:ok, list(UTXO.t())} | {:error, String.t()}
   def get_address_utxos(address, testnet \\ false) do
     resp = API.get("address/#{address}/utxo", testnet)
     case resp do
@@ -72,7 +88,7 @@ defmodule Explora do
 
   # FEES
 
-
+  @spec get_fee_estimates(boolean()) :: {:ok, Fee.t()} | {:error, String.t()}
   def get_fee_estimates(testnet \\ false) do
     resp = API.get("fee-estimates", testnet)
     case resp do

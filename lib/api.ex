@@ -39,8 +39,4 @@ defmodule Explora.API do
         {:error, error}
     end
   end
-
-
-
-
 end

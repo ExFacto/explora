@@ -30,3 +30,29 @@ defmodule Explora.UTXO do
     end)
   end
 end
+
+defmodule Explora.Outpoint do
+  alias Explora.Tx.Status
+
+  defstruct [
+    :spent,
+    :txid,
+    :vout,
+    :status
+  ]
+  def decode(outpoint_json) do
+    outpoint = Poison.decode!(outpoint_json, keys: :atoms!)
+    if outpoint.spent do
+      %__MODULE__{
+        spent: true,
+        txid: outpoint.txid,
+        vout: outpoint.vin,
+        status: Status.new(outpoint.status)
+      }
+    else
+      %__MODULE__{
+        spent: false,
+      }
+    end
+  end
+end
