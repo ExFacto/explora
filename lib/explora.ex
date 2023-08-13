@@ -1,15 +1,6 @@
 defmodule Explora do
   @moduledoc """
   Documentation for `Explora`.
-  """
-
-  @doc """
-  Hello world.
-
-  ## Examples
-
-      iex> Explora.hello()
-      :world
 
   """
   alias Explora.{API, Block, Tx, Fee, UTXO, Outpoint}
@@ -22,6 +13,7 @@ defmodule Explora do
     case resp do
       {:ok, block_json} ->
         {:ok, Block.decode(block_json)}
+        # {:ok, block_json}
       {:error, err} ->
         {:error, "Could not get block: #{hash}: #{err}"}
     end
@@ -45,6 +37,7 @@ defmodule Explora do
     resp = API.get("tx/#{txid}", testnet)
     case resp do
       {:ok, tx_json} ->
+        # {:ok, tx_json}
         {:ok, Tx.decode(tx_json)}
       {:error, err} ->
         {:error, "Could not get transaction: #{txid}: #{err}"}

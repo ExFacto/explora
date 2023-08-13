@@ -11,8 +11,7 @@ defmodule Explora.Fee do
     :blocks_1008
   ]
 
-  def decode(fee_json) do
-    fee = Poison.decode!(fee_json)
+  def new(fee) do
     %__MODULE__{
       blocks_2: fee["2"],
       blocks_3: fee["3"],
@@ -24,5 +23,10 @@ defmodule Explora.Fee do
       blocks_504: fee["504"],
       blocks_1008: fee["1008"]
     }
+  end
+
+  def decode(fee_json) do
+    fee = Poison.decode!(fee_json)
+    new(fee)
   end
 end

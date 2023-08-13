@@ -8,25 +8,24 @@ defmodule Explora.UTXO do
 
   alias Explora.Tx.Status
 
-  def decode(utxo_json) do
-    utxo = Poison.decode!(utxo_json, keys: :atoms!)
+  def new(utxo) do
     %__MODULE__{
-      txid: utxo.txid,
-      vout: utxo.vout,
-      status: utxo.status,
-      value: utxo.value
+      txid: utxo["txid"],
+      vout: utxo["vout"],
+      status: Status.new(utxo["status"]),
+      value: utxo["value"]
     }
+  end
+
+  def decode(utxo_json) do
+    utxo = Poison.decode!(utxo_json)
+    new(utxo)
   end
 
   def decode_utxos(utxos_json) do
     utxos = Poison.decode!(utxos_json)
     Enum.map(utxos, fn utxo ->
-      %__MODULE__{
-        txid: utxo["txid"],
-        vout: utxo["vout"],
-        status: Status.new(utxo["status"]),
-        value: utxo["value"]
-      }
+      new(utxo)
     end)
   end
 end
@@ -37,22 +36,27 @@ defmodule Explora.Outpoint do
   defstruct [
     :spent,
     :txid,
-    :vout,
+    :vin,
     :status
   ]
-  def decode(outpoint_json) do
-    outpoint = Poison.decode!(outpoint_json, keys: :atoms!)
-    if outpoint.spent do
+
+  def new(outpoint) do
+    if outpoint["spent"] do
       %__MODULE__{
         spent: true,
-        txid: outpoint.txid,
-        vout: outpoint.vin,
-        status: Status.new(outpoint.status)
+        txid: outpoint["txid"],
+        vin: outpoint["vin"],
+        status: Status.new(outpoint["status"])
       }
     else
       %__MODULE__{
         spent: false,
       }
     end
+  end
+
+  def decode(outpoint_json) do
+    outpoint = Poison.decode!(outpoint_json)
+    new(outpoint)
   end
 end

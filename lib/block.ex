@@ -9,25 +9,29 @@ defmodule Explora.Block do
     :size,
     :weight,
     :merkle_root,
-    :previous_block_hash,
+    :previousblockhash,
+    :mediantime,
     :nonce,
-    :bits
+    :bits,
+    :difficulty
   ]
 
   def decode(block_json) do
-    block = Poison.decode!(block_json, keys: :atoms!)
+    block = Poison.decode!(block_json)
     %__MODULE__{
-      id: block.id,
-      height: block.height,
-      version: block.version,
-      timestamp: block.timestamp,
-      tx_count: block.tx_count,
-      size: block.size,
-      weight: block.weight,
-      merkle_root: block.merkle_root,
-      previous_block_hash: block.previous_block_hash,
-      nonce: block.nonce,
-      bits: block.bits
+      id: block["id"],
+      height: block["height"],
+      version: block["version"],
+      timestamp: block["timestamp"],
+      tx_count: block["tx_count"],
+      size: block["size"],
+      weight: block["weight"],
+      merkle_root: block["merkle_root"],
+      previousblockhash: block["previousblockhash"],
+      mediantime: block["mediantime"],
+      nonce: block["nonce"],
+      bits: block["bits"],
+      difficulty: block["difficulty"]
     }
   end
 end
